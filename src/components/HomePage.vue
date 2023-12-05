@@ -1,10 +1,15 @@
 <template>
     <div>
       <button @click="addList">Nieuwe Boodschappenlijst</button>
-      <div v-for="list in lists" :key="list.id">
-        <router-link :to="`/boodschappenlijst/${list.id}`">
-          <button>Naar Boodschappenlijst {{ list.id }}</button>
-        </router-link>
+      <div class="lists-container">
+        <div v-for="(list, id) in lists" :key="id" class="list">
+          <router-link :to="`/boodschappenlijst/${id}`">
+            <button>Naar Boodschappenlijst {{ id }}</button>
+          </router-link>
+          <div v-for="(item, index) in list.items" :key="index">
+            {{ item }}
+          </div>
+        </div>
       </div>
     </div>
   </template>
@@ -15,17 +20,17 @@
   export default {
     name: 'HomePage',
     setup() {
-      const lists = ref(JSON.parse(localStorage.getItem('lists') || '[]'));
+      const lists = ref(JSON.parse(localStorage.getItem('lists') || '{}'));
   
       onMounted(() => {
-        if (lists.value.length === 0) {
+        if (Object.keys(lists.value).length === 0) {
           localStorage.setItem('lists', JSON.stringify(lists.value));
         }
       });
   
       const addList = () => {
-        const newList = { id: lists.value.length + 1, items: [] };
-        lists.value.push(newList);
+        const newList = {items: [] };
+        lists.value[Object.keys(lists.value).length + 1] = newList;
         localStorage.setItem('lists', JSON.stringify(lists.value));
       };
   
@@ -33,3 +38,16 @@
     }
   }
   </script>
+  
+  <style scoped>
+  .lists-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  
+  .list {
+    border: 1px solid #ccc;
+    padding: 10px;
+  }
+  </style>

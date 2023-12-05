@@ -1,56 +1,53 @@
 <template>
-  <div class="boodschappenlijst">
-    <div v-for="item in items" :key="item.name">
-      <input type="checkbox" v-model="item.checked">
-      <span :class="{ 'line-through': item.checked }">{{ item.name }}</span>
-    </div>
-    <input type="text" v-model="newItem">
-    <button @click="addItem">Voeg toe</button>
-    <button @click="sortItems">Sorteer</button>
-    <button @click="deleteChecked">Verwijder geselecteerde</button>
+  <div>
+    <h1>Boodschappenlijst ID: {{ id }}</h1>
+    <ul>
+      <li v-for="item in items" :key="item">
+        {{ item }}
+      </li>
+    </ul>
+    <input v-model="newItem" type="text">
+    <button @click="addItem(newItem)">Add item</button>
+    <router-link to="/">
+      <button>Terug naar Home</button>
+    </router-link>
   </div>
 </template>
 
 <script lang="ts">
-import { ref, watch } from 'vue';
+import { computed, ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 
 export default {
-  name: 'Boodschappenlijst',
-  props: ['id'],
-  setup(props) {
-    const lists = ref(JSON.parse(localStorage.getItem('lists') || '[]'));
-    const list = ref(lists.value.find(list => list.id === Number(props.id)));
+  name: 'BoodschappenLijst',
+  setup() {
+    const route = useRoute()
+    const id = computed(() => route.params.id)
+    const items = ref([])
+    const newItem = ref('')
 
-    watch(items, () => {
-      localStorage.setItem('items', JSON.stringify(items.value));
-    }, { deep: true });
-
-    const addItem = () => {
-      const newItems = newItem.value.split(',');
-      for (let name of newItems) {
-        name = name.trim();
-        if (name !== '') {
-          items.value.push({ name, checked: false });
-        }
+    onMounted(() => {
+      const lists = JSON.parse(localStorage.getItem('lists') || '{}')
+      if (lists[id.value] && lists[id.value].items) {
+        items.value = lists[id.value].items
       }
-      newItem.value = '';
-    };
+    })
 
-    const sortItems = () => {
-      items.value.sort((a, b) => a.name.localeCompare(b.name));
-    };
+    function addItem(item) {
+      items.value.push(item)
+      const lists = JSON.parse(localStorage.getItem('lists') || '{}')
+      if (lists[id.value]) {
+        lists[id.value].items = items.value
+        localStorage.setItem('lists', JSON.stringify(lists))
+      }
+    }
 
-    const deleteChecked = () => {
-      items.value = items.value.filter(item => !item.checked);
-    };
-
-    return { items, newItem, addItem, sortItems, deleteChecked };
+    return {
+      id,
+      items,
+      addItem,
+      newItem
+    }
   }
 }
 </script>
-
-<style>
-.line-through {
-  text-decoration: line-through;
-}
-</style>
