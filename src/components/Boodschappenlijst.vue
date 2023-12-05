@@ -40,6 +40,7 @@ export default {
         lists[id.value].items = items.value
         localStorage.setItem('lists', JSON.stringify(lists))
       }
+      newItem.value = ''
     }
 
     return {
