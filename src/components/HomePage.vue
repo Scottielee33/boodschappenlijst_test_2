@@ -3,11 +3,15 @@
       <button @click="addList">Nieuwe Boodschappenlijst</button>
       <div class="lists-container">
         <div v-for="(list, id) in lists" :key="id" class="list">
-          <router-link :to="`/boodschappenlijst/${id}`">
-            <button>Naar Boodschappenlijst {{ id }}</button>
-          </router-link>
+          <h2>Boodschappenlijst {{ id }}</h2>
           <div v-for="(item, index) in list.items" :key="index">
-            {{ item }}
+            {{ index }}
+          </div>
+          <div>
+            <router-link :to="`/boodschappenlijst/${id}`">
+              <button>Naar Boodschappenlijst</button>
+            </router-link>
+            <button @click="deleteList(id)">Delete Boodschappenlijst</button>
           </div>
         </div>
       </div>
@@ -29,12 +33,20 @@
       });
   
       const addList = () => {
-        const newList = {items: [] };
-        lists.value[Object.keys(lists.value).length + 1] = newList;
-        localStorage.setItem('lists', JSON.stringify(lists.value));
+        const newList = {items: {} };
+        const listName = window.prompt("Enter the name of the new Boodschappenlijstje:");
+        if (listName) {
+          lists.value[listName] = newList;
+          localStorage.setItem('lists', JSON.stringify(lists.value));
+        }
+      };
+
+      const deleteList = (id) => {
+      delete lists.value[id];
+      localStorage.setItem('lists', JSON.stringify(lists.value));
       };
   
-      return { lists, addList };
+      return { lists, addList, deleteList };
     }
   }
   </script>
