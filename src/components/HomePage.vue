@@ -36,8 +36,12 @@
         const newList = {items: {} };
         const listName = window.prompt("Enter the name of the new Boodschappenlijstje:");
         if (listName) {
-          lists.value[listName] = newList;
-          localStorage.setItem('lists', JSON.stringify(lists.value));
+          if (lists.value.hasOwnProperty(listName)) {
+            window.alert("A list with this name already exists.");
+          } else {
+            lists.value[listName] = newList;
+            localStorage.setItem('lists', JSON.stringify(lists.value));
+          }
         }
       };
 
