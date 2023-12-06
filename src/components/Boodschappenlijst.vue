@@ -2,7 +2,7 @@
   <div>
     <h1>Boodschappenlijst ID: {{ id }}</h1>
     <ul style="list-style-type: none; padding: 0;">
-      <li v-for="(value, key) in items" :key="key" style="border-bottom: 1px solid #000;">
+      <li v-for="(_, key) in items" :key="key" style="border-bottom: 1px solid #000;">
         <input type="checkbox" v-model="items[key].checked">
         {{ key }}
       </li>
@@ -24,19 +24,19 @@ export default {
   name: 'BoodschappenLijst',
   setup() {
     const route = useRoute()
-    const id = computed(() => route.params.id)
-    const items = ref([])
+    const id = computed(() => String(route.params.id))
+    const items = ref<{ [key: string]: any }>({}) // Define the type of items object
     const newItem = ref('')
 
     onMounted(() => {
-      const lists = JSON.parse(localStorage.getItem('lists') || '{}')
+      let lists = JSON.parse(localStorage.getItem('lists') || '{}')
       if (lists[id.value] && lists[id.value].items) {
         items.value = lists[id.value].items
       }
     })
 
-    function addItem(item) {
-      items.value[item] = {checked: false}
+    function addItem(item: string) {
+      items.value[item] = {} // Add new item to items object
       const lists = JSON.parse(localStorage.getItem('lists') || '{}')
       if (lists[id.value]) {
         lists[id.value].items = items.value

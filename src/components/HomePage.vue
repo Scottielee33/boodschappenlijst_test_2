@@ -4,7 +4,7 @@
       <div class="lists-container">
         <div v-for="(list, id) in lists" :key="id" class="list">
           <h2>Boodschappenlijst {{ id }}</h2>
-          <div v-for="(item, index) in list.items" :key="index">
+          <div v-for="(_, index) in list.items" :key="index">
             {{ index }}
           </div>
           <div>
@@ -45,9 +45,9 @@
         }
       };
 
-      const deleteList = (id) => {
-      delete lists.value[id];
-      localStorage.setItem('lists', JSON.stringify(lists.value));
+      const deleteList = (id:any) => {
+        delete lists.value[id];
+        localStorage.setItem('lists', JSON.stringify(lists.value));
       };
   
       return { lists, addList, deleteList };
